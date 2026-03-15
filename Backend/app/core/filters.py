@@ -34,6 +34,25 @@ class SignalFilter:
         finally:
             self._is_loading = False
 
+    async def summarize_locally(self, text: str) -> str:
+        """Provide a 1-sentence technical gist using local LLM."""
+        await self.ensure_model_loaded()
+        if not self.model:
+            return "Local analysis offline."
+
+        prompt = f"System: You are an architectural forensic analyst. Provide a 1-sentence technical gist of the following signal.\nUser: {text[:800]}\nSummary:"
+        
+        try:
+            inputs = self.tokenizer(prompt, return_tensors="pt").to(self.model.device)
+            outputs = self.model.generate(**inputs, max_new_tokens=40)
+            response = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+            # Extract just the summary part
+            summary = response.split("Summary:")[-1].strip()
+            return summary if summary else "No distinctive pattern identified."
+        except Exception as e:
+            logger.error(f"Summarization error: {e}")
+            return "Technical synthesis failed."
+
     async def classify_with_llm(self, text: str) -> bool:
         """Use local LLM to decide if content is high-signal or junk."""
         await self.ensure_model_loaded()

@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     
     # Model Settings
     LOCAL_MODEL_NAME: str = "Qwen/Qwen2.5-0.5B-Instruct" 
+    PULSE_INTERVAL_MINUTES: int = 15 # Breather between discovery pulses
     
     # Search & Extraction Settings
     TARGET_QUERIES: list = [

@@ -137,6 +137,11 @@ const RawRow = ({ item, index }) => (
       className="text-sm font-medium text-zinc-400 group-hover:text-white transition-colors truncate flex-1"
     >
       {item.title}
+      {item.local_summary && (
+        <span className="block text-[10px] text-zinc-500 font-mono mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+          &gt; {item.local_summary}
+        </span>
+      )}
     </a>
     <ExternalLink className="w-3.5 h-3.5 text-zinc-800 group-hover:text-zinc-500 transition-colors" />
   </motion.div>

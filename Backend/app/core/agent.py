@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import random
 from datetime import datetime
 from typing import Dict, List
 from app.core.scrapers import scraper
@@ -12,7 +13,7 @@ logger = logging.getLogger("hawk.agent")
 class HawkAgent:
     def __init__(self):
         self.is_running = False
-        self.interval_hours = 6  # User mentioned 6-hour cycle
+        self.pulse_interval = settings.PULSE_INTERVAL_MINUTES
 
     def notify_jewel_discovery(self, jewel: Dict):
         """Notify the user about a high-signal discovery."""
@@ -32,6 +33,12 @@ class HawkAgent:
                 logger.warning("PHASE 1 FAILED: No raw signals captured.")
                 return
             logger.info(f"PHASE 1 COMPLETE: Captured {len(raw_signals)} potential signals.")
+            
+            # Real-time local summarization for the telemetry stream
+            logger.info("PHASE 1.5: Generating immediate forensic gists via local Qwen...")
+            for s in raw_signals:
+                text = f"{s.get('title', '')} {s.get('description', '')}"
+                s['local_summary'] = await sieve.summarize_locally(text)
             
             # Save raw signals for the 'All' stream in frontend
             vault.save_raw(raw_signals)
@@ -77,8 +84,10 @@ class HawkAgent:
         
         while self.is_running:
             await self.run_swoop_cycle()
-            logger.info(f"Hawk is resting for {self.interval_hours} hours...")
-            await asyncio.sleep(self.interval_hours * 3600)
+            # Randomized breather between pulses (jitter)
+            breather = self.pulse_interval + random.randint(-2, 5)
+            logger.info(f"Hawk is hovering for {breather} minutes before next pulse...")
+            await asyncio.sleep(max(1, breather) * 60)
 
     def stop(self):
         """Stop the autonomous loop."""
