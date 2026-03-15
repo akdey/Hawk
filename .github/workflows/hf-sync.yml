@@ -17,7 +17,7 @@ jobs:
       - name: Push to hub
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
-          HF_SPACE_ID: ${{ vars.HF_SPACE_ID }}
+          HF_SPACE_ID: ${{ secrets.HF_SPACE_ID }}
         run: |
           if [ -z "$HF_SPACE_ID" ]; then
             echo "Error: HF_SPACE_ID is not set in GitHub Repository Variables."
