@@ -136,7 +136,7 @@ class DiscoverySurfer:
         logger.info(f"Surfer exploring {start_url} (depth={depth})")
         
         from playwright.async_api import async_playwright
-        from playwright_stealth import stealth
+        from playwright_stealth import Stealth
         import random
         import asyncio
         
@@ -151,7 +151,8 @@ class DiscoverySurfer:
                 )
                 
                 page = await context.new_page()
-                await stealth(page)
+                stealth = Stealth()
+                await stealth.apply_async(page)
                 logger.info("Stealth Sub-Agent active. Masking automation signatures.")
                 
                 # Human-like navigation: Random delay before goto
@@ -225,22 +226,43 @@ class DiscoverySurfer:
             return []
 
     async def swoop(self) -> List[Dict]:
-        """The main autonomous 'Swoop' - using the Discovery Surfer."""
+        """The main autonomous 'Swoop' - combining surfing, RSS, and deep audits."""
         all_signals = []
+        tech_scraper = TechnicalScraper()
         
-        # Start hubs
+        # 1. Deep GitHub & Search Audits
+        logger.info("Discovery Orchestrator: initiating technical audits...")
+        github_signals = await tech_scraper.fetch_github_audit()
+        all_signals.extend(github_signals)
+        
+        for query in settings.TARGET_QUERIES:
+            search_signals = await tech_scraper.fetch_search(query)
+            all_signals.extend(search_signals)
+
+        # 2. RSS Forensic Feeds
+        logger.info("Discovery Orchestrator: sifting through RSS hubs...")
+        for feed in settings.RSS_FEEDS:
+            rss_signals = await tech_scraper.fetch_rss(feed)
+            all_signals.extend(rss_signals)
+
+        # 3. Human-like Browser Discovery (Surfing)
+        logger.info("Discovery Orchestrator: deploying browser-based surfs...")
         hubs = [
             "https://news.ycombinator.com",
             "https://www.reddit.com/r/MachineLearning/",
-            "https://www.reddit.com/r/Programming/"
+            "https://www.reddit.com/r/Programming/",
+            "https://dev.to/t/architecture",
+            "https://www.infoq.com/news/"
         ]
         
-        surfer = DiscoverySurfer()
         for hub in hubs:
-            results = await surfer.surf(hub)
-            all_signals.extend(results)
+            try:
+                results = await self.surf(hub)
+                all_signals.extend(results)
+            except Exception as e:
+                logger.error(f"Discovery Orchestrator: Surf failure on {hub}: {e}")
             
-        logger.info(f"Swoop completed. Found {len(all_signals)} potential signals through human-like surfing.")
+        logger.info(f"Swoop completed. Found {len(all_signals)} total forensic signals across all vectors.")
         return all_signals
 
 scraper = DiscoverySurfer()
