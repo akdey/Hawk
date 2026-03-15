@@ -17,8 +17,13 @@ jobs:
       - name: Push to hub
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_SPACE_ID: ${{ vars.HF_SPACE_ID }}
         run: |
-          git config --global user.email "amitkr.dey1998@gmail.com"
+          if [ -z "$HF_SPACE_ID" ]; then
+            echo "Error: HF_SPACE_ID is not set in GitHub Repository Variables."
+            exit 1
+          fi
+          git config --global user.email "hawk-agent@huggingface.co"
           git config --global user.name "Hawk Agent"
           # Sync only the Backend subdirectory to the root of the Space
-          git subtree push --prefix Backend https://a-k-dey:$HF_TOKEN@huggingface.co/spaces/${{ vars.HF_SPACE_ID }} main
+          git subtree push --prefix Backend https://a-k-dey:$HF_TOKEN@huggingface.co/spaces/$HF_SPACE_ID main
