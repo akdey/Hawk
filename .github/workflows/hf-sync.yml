@@ -1,0 +1,24 @@
+name: Sync to Hugging Face Hub
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'Backend/**'
+
+jobs:
+  sync-to-hub:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          lfs: true
+      - name: Push to hub
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          git config --global user.email "amitkr.dey1998@gmail.com"
+          git config --global user.name "Hawk Agent"
+          # Sync only the Backend subdirectory to the root of the Space
+          git subtree push --prefix Backend https://a-k-dey:$HF_TOKEN@huggingface.co/spaces/${{ vars.HF_SPACE_ID }} main

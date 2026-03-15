@@ -1,0 +1,18 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+.venv/
+.env*
+!.env.example
+
+# Repository specific
+**/node_modules/
+**/data/
+**/logs/
+**/.DS_Store
+Backend/vault_cache.csv
+Backend/raw_signals.csv
