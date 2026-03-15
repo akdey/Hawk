@@ -1,119 +1,92 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg: #030303;
-  --color-panel: rgba(15, 15, 15, 0.7);
-  --color-accent: #8b5cf6;
-}
-
-:root {
-  --bg: #030303;
-  --panel: rgba(15, 15, 15, 0.7);
-  --glass: rgba(255, 255, 255, 0.03);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --accent: #8b5cf6;
-  --accent-glow: rgba(139, 92, 246, 0.4);
-  --jewel: #facc15;
-  --noise: #4b5563;
-  --text-primary: #f3f4f6;
-  --text-secondary: #9ca3af;
+  --color-brand-primary: #8b5cf6;
+  --color-brand-secondary: #06b6d4;
   
-  --font-main: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --color-bg-base: #09090b;
+  --color-bg-surface: #18181b;
+  --color-bg-panel: rgba(24, 24, 27, 0.8);
+  
+  --color-border-subtle: rgba(255, 255, 255, 0.08);
+  --color-border-muted: rgba(255, 255, 255, 0.04);
+  
+  --color-text-primary: #fafafa;
+  --color-text-secondary: #a1a1aa;
+  --color-text-muted: #71717a;
 
-  background-color: var(--bg);
-  color: var(--text-primary);
-  font-family: var(--font-main);
-  -webkit-font-smoothing: antialiased;
+  --font-sans: "Inter", "Outfit", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
 }
 
-body {
-  margin: 0;
-  overflow-x: hidden;
-  background: radial-gradient(circle at 50% -20%, #1e1b4b 0%, var(--bg) 80%);
+@layer base {
+  :root {
+    background-color: var(--color-bg-base);
+    color: var(--color-text-primary);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    overflow-x: hidden;
+    /* Subtle background texture/gradient */
+    background: 
+      radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.05) 0%, transparent 60%),
+      var(--color-bg-base);
+  }
 }
 
-#root {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+@layer components {
+  .premium-card {
+    @apply bg-bg-surface border border-border-subtle rounded-2xl transition-all duration-300;
+    box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.5);
+  }
+
+  .premium-card:hover {
+    @apply border-white/20 -translate-y-1;
+    box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.6);
+  }
+
+  .glass-panel {
+    @apply backdrop-blur-xl bg-bg-panel border border-border-subtle;
+  }
+
+  .nav-blur {
+    @apply sticky top-0 z-50 backdrop-blur-md bg-bg-base/80 border-b border-border-muted;
+  }
+
+  /* Status Indicators */
+  .status-dot {
+    @apply w-1.5 h-1.5 rounded-full inline-block;
+  }
 }
 
-/* Liquid Glassmorphism Utilities */
-.glass-panel {
-  background: var(--panel);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid var(--glass-border);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+/* Custom Utilities */
+.text-balance {
+  text-wrap: balance;
 }
 
-.liquid-border {
-  position: relative;
-  overflow: hidden;
-}
-
-.liquid-border::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: conic-gradient(
-    transparent, 
-    var(--accent), 
-    var(--accent-glow), 
-    transparent 30%
-  );
-  animation: rotate 4s linear infinite;
-  z-index: -1;
-}
-
-@keyframes rotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-/* Scrollbar Styling */
+/* Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg);
+  @apply bg-transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--accent);
+  @apply bg-zinc-800 rounded-full hover:bg-zinc-700;
 }
 
 /* Animations */
-.fade-in {
-  animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Glow effects */
-.glow-text {
-  text-shadow: 0 0 20px var(--accent-glow);
-}
-
-.glow-card {
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.glow-card:hover {
-  border-color: var(--accent);
-  box-shadow: 0 0 30px var(--accent-glow);
-  transform: translateY(-5px) scale(1.01);
+.animate-slide-up {
+  animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
