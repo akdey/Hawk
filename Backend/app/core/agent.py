@@ -26,35 +26,43 @@ class HawkAgent:
         
         try:
             # 1. Swoop (Scrape all sources)
+            logger.info("PHASE 1: Taking flight for Discovery Swoop...")
             raw_signals = await scraper.swoop()
             if not raw_signals:
-                logger.info("No raw signals found during swoop.")
+                logger.warning("PHASE 1 FAILED: No raw signals captured.")
                 return
+            logger.info(f"PHASE 1 COMPLETE: Captured {len(raw_signals)} potential signals.")
             
             # Save raw signals for the 'All' stream in frontend
             vault.save_raw(raw_signals)
 
             # 2. Sieve (Filter)
+            logger.info("PHASE 2: Sifting signals through local Sieve...")
             high_signal_items = await sieve.filter_noise(raw_signals)
             if not high_signal_items:
-                logger.info("No high-signal items passed the sieve.")
+                logger.info("PHASE 2 COMPLETE: No signals passed the dense noise filter.")
                 return
+            logger.info(f"PHASE 2 COMPLETE: {len(high_signal_items)} high-signal candidates identified.")
 
             # 3. Brain (Synthesize)
+            logger.info("PHASE 3: Initiating Groq Synthesis for candidate jewels...")
             jewels = []
-            for item in high_signal_items:
+            for i, item in enumerate(high_signal_items, 1):
+                logger.info(f"Synthesizing candidate {i}/{len(high_signal_items)}: {item.get('title')[:50]}...")
                 jewel = await brain.synthesize(item)
                 if jewel and jewel.get("classification") == "Jewel":
                     jewels.append(jewel)
                     self.notify_jewel_discovery(jewel)
+            logger.info(f"PHASE 3 COMPLETE: Synthesized {len(jewels)} technical jewels.")
 
             # 4. Vault (Store)
             if jewels:
+                logger.info("PHASE 4: Locking jewels into the Technical Vault...")
                 vault.save_locally(jewels)
                 await vault.push_to_hf()
-                logger.info(f"Cycle completed. {len(jewels)} jewels vaulted.")
+                logger.info(f"PHASE 4 COMPLETE: Project Hawk cycle finalized. {len(jewels)} jewels securely vaulted.")
             else:
-                logger.info("Cycle completed. No jewels found this time.")
+                logger.info("PHASE 4 SKIPPED: No new jewels to vault this cycle.")
 
         except Exception as e:
             logger.error(f"Error in Hawk agent cycle: {e}")

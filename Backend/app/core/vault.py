@@ -54,7 +54,7 @@ class KnowledgeVault:
 
         df = pd.DataFrame(new_jewels)
         df.to_csv(self.local_cache, mode='a', header=not os.path.exists(self.local_cache), index=False)
-        logger.info(f"Vaulted {len(new_jewels)} NEW technical jewels.")
+        logger.info(f"Technical Vault updated: {len(new_jewels)} NEW technical jewels added to '{self.local_cache}'.")
 
     async def push_to_hf(self):
         """Push local cache to private HF Dataset."""
@@ -64,11 +64,12 @@ class KnowledgeVault:
 
         try:
             if os.path.exists(self.local_cache):
+                logger.info(f"Initiating Hugging Face Vault Sync to target: {self.repo_id}")
                 df = pd.read_csv(self.local_cache)
                 dataset = Dataset.from_pandas(df)
                 dataset.push_to_hub(self.repo_id, token=settings.HF_TOKEN, private=True)
-                logger.info(f"Vault pushed to Hugging Face: {self.repo_id}")
+                logger.info(f"VAULT SYNC SUCCESSFUL: Core Technical memory updated on HF Hub.")
         except Exception as e:
-            logger.error(f"Failed to push to HF: {e}")
+            logger.error(f"VAULT SYNC FAILED: {e}")
 
 vault = KnowledgeVault()

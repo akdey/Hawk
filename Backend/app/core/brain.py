@@ -74,6 +74,7 @@ class TechnicalArchitect:
             
             import json
             result = json.loads(chat_completion.choices[0].message.content)
+            logger.info(f"Brain Result: classification={result.get('classification', 'N/A')}, entropy={result.get('entropy_score', 'N/A')}")
             signal.update(result)
             
             # Post-processing: Semantic Drift

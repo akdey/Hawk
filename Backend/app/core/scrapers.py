@@ -152,19 +152,24 @@ class DiscoverySurfer:
                 
                 page = await context.new_page()
                 await stealth_async(page)
+                logger.info("Stealth Sub-Agent active. Masking automation signatures.")
                 
                 # Human-like navigation: Random delay before goto
-                await asyncio.sleep(random.uniform(1, 3))
+                delay = random.uniform(1, 3)
+                logger.info(f"Simulating human pause ({delay:.2f}s) before navigation...")
+                await asyncio.sleep(delay)
                 
                 try:
+                    logger.info(f"Navigating to investigative target: {start_url}")
                     await page.goto(start_url, wait_until="domcontentloaded", timeout=60000)
                 except Exception as e:
-                    logger.warning(f"Initial goto failed for {start_url}, retrying... {e}")
+                    logger.warning(f"Target navigation resistance detected, retrying with broader wait... {e}")
                     await asyncio.sleep(2)
                     await page.goto(start_url, wait_until="load", timeout=60000)
 
                 # Human-like interaction: Randomized scrolling and pauses
-                for _ in range(random.randint(2, 4)):
+                logger.info("Executing kinetic scrolling pattern for content discovery...")
+                for i in range(random.randint(2, 4)):
                     scroll_height = random.randint(300, 800)
                     await page.evaluate(f"window.scrollBy(0, {scroll_height})")
                     await asyncio.sleep(random.uniform(0.5, 1.5))
@@ -176,12 +181,14 @@ class DiscoverySurfer:
                 await page.mouse.move(random.randint(0, 500), random.randint(0, 500))
                 
                 # 1. Extract Current Content
+                logger.info("Performing surgical content extraction...")
                 content = await page.content()
                 soup = BeautifulSoup(content, 'lxml')
                 
                 # Basic context extraction
                 title = await page.title()
                 text_content = await page.evaluate("document.body.innerText")
+                logger.info(f"Extraction successful: '{title[:40]}...' ({len(text_content)} characters captured)")
                 
                 signals.append({
                     "title": title,
