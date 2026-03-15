@@ -136,23 +136,44 @@ class DiscoverySurfer:
         logger.info(f"Surfer exploring {start_url} (depth={depth})")
         
         from playwright.async_api import async_playwright
+        from playwright_stealth import stealth_async
+        import random
         import asyncio
+        
         signals = []
         try:
             async with async_playwright() as p:
                 browser = await p.chromium.launch(headless=True)
-                # Enhanced stealth
                 context = await browser.new_context(
-                    user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-                    viewport={'width': 1280, 'height': 800}
+                    user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+                    viewport={'width': 1920, 'height': 1080},
+                    device_scale_factor=1,
                 )
-                page = await context.new_page()
                 
-                # Human-like navigation
-                await page.goto(start_url, wait_until="networkidle", timeout=30000)
-                # Random scroll to trigger lazy loading
-                await page.evaluate("window.scrollTo(0, document.body.scrollHeight/2)")
-                await asyncio.sleep(2)
+                page = await context.new_page()
+                await stealth_async(page)
+                
+                # Human-like navigation: Random delay before goto
+                await asyncio.sleep(random.uniform(1, 3))
+                
+                try:
+                    await page.goto(start_url, wait_until="domcontentloaded", timeout=60000)
+                except Exception as e:
+                    logger.warning(f"Initial goto failed for {start_url}, retrying... {e}")
+                    await asyncio.sleep(2)
+                    await page.goto(start_url, wait_until="load", timeout=60000)
+
+                # Human-like interaction: Randomized scrolling and pauses
+                for _ in range(random.randint(2, 4)):
+                    scroll_height = random.randint(300, 800)
+                    await page.evaluate(f"window.scrollBy(0, {scroll_height})")
+                    await asyncio.sleep(random.uniform(0.5, 1.5))
+                
+                # Wait for any lazy content
+                await asyncio.sleep(random.uniform(2, 4))
+                
+                # Extra stealth: move mouse to a random position
+                await page.mouse.move(random.randint(0, 500), random.randint(0, 500))
                 
                 # 1. Extract Current Content
                 content = await page.content()

@@ -8,11 +8,11 @@ import {
   Terminal, 
   Search, 
   Layers, 
-  Globe, 
   Cpu, 
-  LayoutDashboard,
-  Menu,
-  X
+  Box,
+  Hash,
+  ArrowRight,
+  Info
 } from 'lucide-react';
 import axios from 'axios';
 
@@ -21,120 +21,93 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api
 
 // --- COMPONENTS ---
 
-const Card = ({ children, className = "", delay = 0 }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 10 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.4, delay: delay * 0.1 }}
-    className={`premium-card p-5 ${className}`}
-  >
-    {children}
-  </motion.div>
+const Panel = ({ children, title, subtitle, className = "" }) => (
+  <div className={`instrument-panel border-sharp flex flex-col ${className}`}>
+    {(title || subtitle) && (
+      <div className="px-4 py-2 border-b border-lab-border flex justify-between items-center bg-lab-bg/50">
+        <span className="text-[10px] font-mono font-bold tracking-[0.2em] text-lab-cyan uppercase">{title}</span>
+        <span className="text-[9px] font-mono text-lab-border-focus uppercase">{subtitle}</span>
+      </div>
+    )}
+    <div className="p-4 flex-1">
+      {children}
+    </div>
+  </div>
 );
 
-const Badge = ({ children, variant = 'default' }) => {
-  const variants = {
-    default: 'bg-white/5 text-zinc-400 border-white/10',
-    brand: 'bg-brand-primary/10 text-brand-primary border-brand-primary/20',
-    success: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-    warning: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-  };
-  return (
-    <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border tracking-wide uppercase ${variants[variant]}`}>
-      {children}
+const ReadoutValue = ({ label, value, color = "white" }) => (
+  <div className="flex flex-col gap-0.5">
+    <span className="text-[8px] font-mono font-bold text-zinc-600 uppercase tracking-widest">{label}</span>
+    <span className={`readout-value text-xs ${color === 'cyan' ? 'text-lab-cyan' : color === 'yellow' ? 'text-lab-yellow' : 'text-zinc-200'}`}>
+      {value}
     </span>
-  );
-};
+  </div>
+);
 
-const JewelCard = ({ item, index }) => (
-  <Card delay={index} className="flex flex-col h-full group">
-    <div className="flex justify-between items-start mb-5">
-      <div className="flex items-center gap-2">
-        <div className="p-1.5 rounded-lg bg-brand-primary/10 text-brand-primary">
+const JewelCard = ({ item }) => (
+  <Panel 
+    title="Structural Asset" 
+    subtitle={`ID: ${item.hash?.slice(0, 8) || '0x000'}`}
+    className="h-full group"
+  >
+    <div className="flex justify-between items-start mb-6">
+      <div className="flex items-center gap-3">
+        <div className="w-8 h-8 flex items-center justify-center border border-lab-yellow bg-lab-yellow/5 text-lab-yellow">
           <Zap className="w-4 h-4" />
         </div>
         <div>
-          <h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Signal Jewel</h4>
-          <Badge variant="brand">{(item.entropy_score * 100).toFixed(0)}% Entropy</Badge>
+          <h3 className="text-sm font-bold leading-tight text-white mb-0.5 tracking-tight group-hover:text-lab-cyan transition-technical">
+            {item.title}
+          </h3>
+          <span className="text-[10px] font-mono text-zinc-500 italic block">PRECISION INVESTIGATION</span>
         </div>
       </div>
-      <a 
-        href={item.link} 
-        target="_blank" 
-        rel="noreferrer" 
-        className="p-2 rounded-full hover:bg-white/5 text-zinc-500 hover:text-white transition-colors"
-      >
+      <a href={item.link} target="_blank" rel="noreferrer" className="text-zinc-600 hover:text-lab-cyan transition-colors">
         <ExternalLink className="w-4 h-4" />
       </a>
     </div>
 
-    <h3 className="text-lg font-bold leading-tight mb-3 text-balance group-hover:text-brand-primary transition-colors">
+    <div className="p-3 bg-zinc-900/30 border border-lab-border mb-6">
+      <p className="text-xs text-zinc-400 font-mono leading-relaxed">
+        {item.technical_significance}
+      </p>
+    </div>
+
+    <div className="grid grid-cols-2 gap-y-4 border-t border-lab-border/50 pt-4">
+      <ReadoutValue label="Pattern" value={item.architectural_pattern} />
+      <ReadoutValue label="Entropy" value={`${(item.entropy_score * 100).toFixed(2)}%`} color="yellow" />
+      <ReadoutValue label="Future Scope" value={item.future_scope} />
+      <ReadoutValue label="Drift" value={item.semantic_drift || "NOMINAL"} color="cyan" />
+    </div>
+  </Panel>
+);
+
+const RawReadout = ({ item }) => (
+  <div className="group flex items-center gap-4 py-2 px-4 border-b border-lab-border/30 hover:bg-lab-cyan/5 transition-colors">
+    <div className="w-1.5 h-1.5 status-active" />
+    <span className="text-[10px] font-mono text-zinc-600 w-24 shrink-0 uppercase tracking-tighter">
+      [{new Date(item.captured_at).toLocaleTimeString([], { hour12: false })}]
+    </span>
+    <span className="text-[10px] font-mono text-lab-cyan w-32 shrink-0 truncate uppercase">
+      {item.source}
+    </span>
+    <a 
+      href={item.link} 
+      target="_blank" 
+      rel="noreferrer" 
+      className="text-[11px] font-medium text-zinc-400 group-hover:text-white transition-colors truncate flex-1"
+    >
       {item.title}
-    </h3>
-
-    <div className="flex-1">
-      <div className="p-3.5 rounded-xl bg-zinc-900/50 border border-white/5 mb-5">
-        <p className="text-sm text-zinc-400 leading-relaxed italic">
-          "{item.technical_significance}"
-        </p>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <span className="text-[9px] uppercase text-zinc-600 font-bold block mb-1">Architecture</span>
-          <span className="text-xs font-mono text-zinc-300">{item.architectural_pattern}</span>
-        </div>
-        <div>
-          <span className="text-[9px] uppercase text-zinc-600 font-bold block mb-1">Evolution</span>
-          <span className="text-xs text-zinc-400">{item.future_scope}</span>
-        </div>
-      </div>
-    </div>
-
-    {item.semantic_drift && (
-      <div className="mt-5 pt-4 border-t border-white/5 flex items-center gap-2">
-        <Activity className="w-3.5 h-3.5 text-brand-secondary" />
-        <span className="text-[10px] text-brand-secondary font-mono tracking-tight">{item.semantic_drift}</span>
-      </div>
-    )}
-  </Card>
+    </a>
+    <ArrowRight className="w-3 h-3 text-zinc-800 group-hover:text-lab-cyan transition-colors" />
+  </div>
 );
-
-const RawSignalCard = ({ item, index }) => (
-  <motion.div
-    initial={{ opacity: 0, x: -10 }}
-    animate={{ opacity: 1, x: 0 }}
-    transition={{ delay: index * 0.05 }}
-    className="group flex items-start gap-4 p-4 rounded-xl border border-transparent hover:border-white/5 hover:bg-white/[0.02] transition-all"
-  >
-    <div className={`mt-1 h-2 w-2 rounded-full shrink-0 ${item.source.includes('GitHub') ? 'bg-emerald-500' : 'bg-brand-primary'}`} />
-    <div className="min-w-0 flex-1">
-      <div className="flex items-center gap-2 mb-1">
-        <span className="text-[10px] font-mono text-zinc-500 uppercase">{item.source}</span>
-        <span className="text-[10px] text-zinc-700">•</span>
-        <span className="text-[10px] font-mono text-zinc-600">{new Date(item.captured_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-      </div>
-      <a 
-        href={item.link} 
-        target="_blank" 
-        rel="noreferrer" 
-        className="block text-sm font-medium text-zinc-300 group-hover:text-white transition-colors truncate"
-      >
-        {item.title}
-      </a>
-    </div>
-    <ExternalLink className="w-3.5 h-3.5 text-zinc-700 group-hover:text-zinc-500 self-center" />
-  </motion.div>
-);
-
-// --- MAIN APP ---
 
 export default function App() {
-  const [view, setView] = useState('focused');
+  const [view, setView] = useState('ANALYZE');
   const [jewels, setJewels] = useState([]);
   const [raw, setRaw] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -152,161 +125,131 @@ export default function App() {
       setRaw(rRes.data);
       setLoading(false);
     } catch (err) {
-      console.error("Transmission failed:", err);
+      console.error("Link Failure:", err);
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col selection:bg-brand-primary/30">
+    <div className="min-h-screen flex flex-col bg-lab-bg selection:bg-lab-cyan/30">
       
-      {/* Navigation */}
-      <nav className="nav-blur">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-brand-primary flex items-center justify-center shadow-lg shadow-brand-primary/20">
-                <Shield className="text-white w-5 h-5" />
-              </div>
-              <div className="hidden sm:block">
-                <h1 className="text-lg font-black tracking-tighter uppercase">Hawk <span className="text-zinc-600">v1</span></h1>
-              </div>
-            </div>
+      {/* Precision Header */}
+      <header className="border-b border-lab-border bg-lab-bg sticky top-0 z-50">
+        <div className="max-w-[1600px] mx-auto flex items-center h-12 px-4">
+          <div className="flex items-center gap-3 border-r border-lab-border pr-6 h-full">
+            <Shield className="w-4 h-4 text-lab-cyan" />
+            <h1 className="text-xs font-black tracking-[0.4em] uppercase">Hawk <span className="text-zinc-700">LABS</span></h1>
+          </div>
 
-            {/* Desktop Tabs */}
-            <div className="hidden md:flex items-center gap-1 bg-zinc-900/50 p-1 rounded-xl border border-white/5">
-              <button 
-                onClick={() => setView('focused')}
-                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${view === 'focused' ? 'bg-zinc-800 text-white shadow-sm' : 'text-zinc-500 hover:text-white'}`}
+          <nav className="flex items-center h-full px-6 gap-8">
+            {['ANALYZE', 'TELEMETRY'].map(tab => (
+              <button
+                key={tab}
+                onClick={() => setView(tab)}
+                className={`text-[10px] font-bold tracking-widest h-full border-b-2 transition-colors ${view === tab ? 'border-lab-cyan text-white' : 'border-transparent text-zinc-600 hover:text-zinc-300'}`}
               >
-                <Layers className="w-3.5 h-3.5" /> Focused
+                {tab}
               </button>
-              <button 
-                onClick={() => setView('all')}
-                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${view === 'all' ? 'bg-zinc-800 text-white shadow-sm' : 'text-zinc-500 hover:text-white'}`}
-              >
-                <Terminal className="w-3.5 h-3.5" /> Raw Stream
-              </button>
-            </div>
+            ))}
+          </nav>
 
-            {/* Mobile Actions */}
-            <div className="flex md:hidden items-center gap-2">
-              <button 
-                onClick={() => setView(view === 'focused' ? 'all' : 'focused')}
-                className="p-2 rounded-lg bg-zinc-900 border border-white/5 text-zinc-400"
-              >
-                {view === 'focused' ? <Terminal className="w-5 h-5" /> : <Layers className="w-5 h-5" />}
-              </button>
+          <div className="ml-auto hidden md:flex items-center gap-6">
+            <div className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 status-active" />
+              <span className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest font-bold">Engine: ACTIVE</span>
             </div>
-
-            <div className="flex items-center gap-4">
-              <div className="hidden lg:flex items-center gap-3 px-4 border-l border-white/5">
-                <span className="flex items-center gap-1.5 text-[10px] font-mono text-zinc-500 uppercase">
-                  <span className="status-dot bg-emerald-500 animate-pulse" /> investigation live
-                </span>
-                <span className="text-zinc-800 text-sm">|</span>
-                <span className="text-[10px] font-mono text-zinc-500">{jewels.length + raw.length} SIGNALS</span>
-              </div>
+            <div className="px-3 py-1 border border-lab-border bg-lab-surface">
+              <span className="text-[9px] font-mono text-lab-cyan font-bold">{jewels.length + raw.length} SIGNALS</span>
             </div>
           </div>
         </div>
-      </nav>
-
-      {/* Hero / Header Area */}
-      <header className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-12 pb-8">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="max-w-2xl"
-        >
-          <div className="flex items-center gap-2 mb-4">
-            <Badge variant="brand">Autonomous Agent</Badge>
-            <span className="text-zinc-700">•</span>
-            <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Active Investigation</span>
-          </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight mb-4 text-balance">
-            Technical forensics for modern architecture.
-          </h2>
-          <p className="text-zinc-400 text-lg leading-relaxed max-w-xl">
-            Sifting through high-entropy noise to find the structural jewels that define the future of software construction.
-          </p>
-        </motion.div>
       </header>
 
       {/* Main Content Area */}
-      <main className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 flex-1">
+      <main className="flex-1 max-w-[1600px] mx-auto w-full p-4 lg:p-8">
+        
+        {/* Dashboard Analytics Bar */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <div className="border border-lab-border p-4 bg-lab-surface/50 translate-x-[1px]">
+            <ReadoutValue label="Capturing Node" value="NORTH-AMERICA-01" color="cyan" />
+          </div>
+          <div className="border border-lab-border p-4 bg-lab-surface/50">
+            <ReadoutValue label="Core Uptime" value="1,244:32:02" />
+          </div>
+          <div className="border border-lab-border p-4 bg-lab-surface/50">
+            <ReadoutValue label="Signals Processed" value="45,920" color="yellow" />
+          </div>
+          <div className="border border-lab-border p-4 bg-lab-surface/50 -translate-x-[1px]">
+            <ReadoutValue label="Agent Entropy" value="0.041" />
+          </div>
+        </div>
+
         <AnimatePresence mode="wait">
-          {view === 'focused' ? (
+          {view === 'ANALYZE' ? (
             <motion.div 
-              key="focused"
+              key="analyze"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+              transition={{ duration: 0.1 }}
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-lab-border"
             >
-              {jewels.map((j, i) => <JewelCard key={j.hash || i} item={j} index={i} />)}
-              {jewels.length === 0 && !loading && (
-                <div className="col-span-full py-24 text-center border-2 border-dashed border-white/5 rounded-3xl">
-                  <Activity className="w-10 h-10 text-zinc-700 mx-auto mb-4 animate-pulse" />
-                  <p className="text-zinc-500 font-medium italic">Scanning hyperspace for high-signal assets...</p>
+              {jewels.map((j, i) => <JewelCard key={j.hash || i} item={j} />)}
+              {jewels.length === 0 && (
+                <div className="col-span-full bg-lab-surface flex flex-col items-center justify-center py-48 border border-lab-border">
+                  <Cpu className="w-12 h-12 text-zinc-800 mb-6 animate-pulse" />
+                  <p className="font-mono text-[10px] text-zinc-600 uppercase tracking-[0.3em]">Synthesizing structural assets...</p>
                 </div>
               )}
             </motion.div>
           ) : (
             <motion.div 
-              key="all"
+              key="telemetry"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="max-w-3xl"
+              transition={{ duration: 0.1 }}
+              className="border border-lab-border bg-lab-surface"
             >
-              <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/5">
+              <div className="px-6 py-4 border-b border-lab-border bg-lab-bg/50 flex justify-between items-center">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-zinc-900 border border-white/5 text-zinc-400">
-                    <Search className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-bold uppercase tracking-wider">Raw Signal Stream</h3>
-                    <p className="text-[10px] font-mono text-zinc-500 uppercase">Unfiltered ingestion / Continuous scan</p>
-                  </div>
+                  <Terminal className="w-4 h-4 text-lab-cyan" />
+                  <h2 className="text-[10px] font-bold uppercase tracking-widest">Unfiltered Telemetry Stream</h2>
                 </div>
-                <div className="text-right">
-                  <span className="text-xl font-mono font-bold">{raw.length}</span>
-                  <span className="text-[10px] font-mono text-zinc-600 uppercase block">Total Payloads</span>
+                <div className="flex items-center gap-4">
+                  <span className="text-[10px] font-mono text-zinc-500 uppercase">Buffer: 50/50</span>
+                  <div className="flex gap-1">
+                    <div className="w-1 h-3 bg-lab-cyan/20" />
+                    <div className="w-1 h-3 bg-lab-cyan" />
+                    <div className="w-1 h-3 bg-lab-cyan/40" />
+                  </div>
                 </div>
               </div>
-              <div className="space-y-1">
-                {raw.map((r, i) => <RawSignalCard key={r.hash || i} item={r} index={i} />)}
+              <div className="overflow-y-auto max-h-[70vh]">
+                {raw.map((r, i) => <RawReadout key={r.hash || i} item={r} />)}
               </div>
             </motion.div>
           )}
         </AnimatePresence>
       </main>
 
-      {/* Footer */}
-      <footer className="mt-auto py-12 border-t border-white/5 bg-zinc-950/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-8">
-            <div className="flex items-center gap-6">
-              <div className="flex items-center gap-3 opacity-50 grayscale hover:grayscale-0 transition-all cursor-default">
-                <Shield className="w-5 h-5" />
-                <span className="text-xs font-bold uppercase tracking-tighter italic">Hawk Labs</span>
-              </div>
-              <div className="hidden sm:flex gap-4 border-l border-white/5 pl-6">
-                <span className="flex items-center gap-1.5 text-[10px] font-mono text-zinc-600 uppercase">
-                  <Cpu className="w-3 h-3" /> Engine: SmolLM2
-                </span>
-                <span className="flex items-center gap-1.5 text-[10px] font-mono text-zinc-600 uppercase">
-                  <Globe className="w-3 h-3" /> Network: Global
-                </span>
-              </div>
+      {/* Footer System Status Bar */}
+      <footer className="border-t border-lab-border bg-lab-bg/80 backdrop-blur-sm mt-auto">
+        <div className="max-w-[1600px] mx-auto h-10 px-4 flex items-center justify-between">
+          <div className="flex items-center gap-6">
+            <span className="text-[9px] font-mono text-zinc-600 uppercase tracking-widest font-bold">© 2026 HAWK LABS</span>
+            <div className="flex gap-1.5 opacity-30">
+              {[...Array(6)].map((_, i) => <div key={i} className="w-1 h-1 bg-lab-cyan" />)}
             </div>
-            
-            <div className="flex items-center gap-8 text-[10px] font-mono text-zinc-500 uppercase tracking-[0.2em]">
-              <span className="hover:text-white transition-colors cursor-pointer">Docs</span>
-              <span className="hover:text-white transition-colors cursor-pointer">API</span>
-              <span className="hover:text-white transition-colors cursor-pointer">Privacy</span>
-              <span className="text-zinc-800">|</span>
-              <span className="text-zinc-600">© 2026</span>
+          </div>
+          
+          <div className="flex items-center gap-8">
+            <div className="flex items-center gap-2">
+              <span className="text-[8px] font-mono text-zinc-600 uppercase">System Integrity:</span>
+              <span className="text-[9px] font-mono text-lab-cyan">100%</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[8px] font-mono text-zinc-600 uppercase">Investigation Latency:</span>
+              <span className="text-[9px] font-mono text-lab-yellow">12ms</span>
             </div>
           </div>
         </div>
