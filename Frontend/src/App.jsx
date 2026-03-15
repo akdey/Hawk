@@ -2,144 +2,26 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Shield, 
-  Activity, 
+  ArrowLeft,
   ExternalLink, 
-  Zap, 
-  Terminal, 
-  Search, 
-  Layers, 
-  Cpu, 
-  MousePointer2,
-  Fingerprint,
-  Radio,
-  Clock,
-  Command,
-  ArrowUpRight
+  ArrowRight,
+  ChevronRight,
+  Globe,
+  Lock,
+  Search,
+  Zap,
+  Radio
 } from 'lucide-react';
 import axios from 'axios';
 
-// --- CONFIG ---
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1/signals';
 
-// --- COMPONENTS ---
-
-const GlassCard = ({ children, className = "", delay = 0 }) => (
-  <motion.div
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    transition={{ 
-      duration: 0.2, 
-      delay: delay * 0.02, 
-      ease: "easeOut" 
-    }}
-    className={`glass-card p-6 ${className}`}
-  >
-    {children}
-  </motion.div>
-);
-
-const Badge = ({ children }) => (
-  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase bg-studio-emerald/10 text-studio-emerald border border-studio-emerald/20">
-    {children}
-  </span>
-);
-
-const Indicator = ({ label, value, icon: Icon, color = "emerald" }) => (
-  <div className="flex items-center gap-3">
-    <div className={`p-2 rounded-lg bg-zinc-900 border border-white/5 ${color === 'emerald' ? 'text-studio-emerald' : 'text-zinc-500'}`}>
-      <Icon className="w-4 h-4" />
-    </div>
-    <div>
-      <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest leading-none mb-1.5">{label}</p>
-      <p className="text-sm font-mono font-medium text-white leading-none">{value}</p>
-    </div>
-  </div>
-);
-
-const JewelCard = ({ item, index }) => (
-  <GlassCard delay={index} className="flex flex-col h-full">
-    <div className="flex justify-between items-start mb-6 border-b border-white/5 pb-4">
-      <div className="flex flex-col">
-        <h3 className="text-base font-bold text-white tracking-tight leading-tight">
-          {item.title}
-        </h3>
-        <div className="flex items-center gap-2 mt-1.5">
-          <span className="text-[10px] font-mono text-studio-emerald uppercase tracking-wider">HASH:</span>
-          <span className="text-[10px] font-mono text-zinc-500">{item.hash?.slice(0, 12)}</span>
-        </div>
-      </div>
-      <a 
-        href={item.link} 
-        target="_blank" 
-        rel="noreferrer" 
-        className="p-2 rounded-lg bg-zinc-900/50 hover:bg-studio-emerald/10 text-zinc-500 hover:text-studio-emerald transition-all"
-      >
-        <ArrowUpRight className="w-4 h-4" />
-      </a>
-    </div>
-
-    <div className="flex-1 space-y-6">
-      <div className="p-4 rounded-xl bg-zinc-950/60 border border-white/5">
-        <p className="text-sm text-zinc-300 leading-relaxed">
-          {item.technical_significance}
-        </p>
-      </div>
-
-      <div className="grid grid-cols-2 gap-y-4 text-xs font-mono">
-        <div>
-          <span className="text-[9px] uppercase text-zinc-600 font-bold tracking-widest block mb-1">Architecture</span>
-          <span className="text-zinc-300">{item.architectural_pattern}</span>
-        </div>
-        <div>
-          <span className="text-[9px] uppercase text-zinc-600 font-bold tracking-widest block mb-1">Entropy</span>
-          <span className="text-studio-emerald">{(item.entropy_score * 100).toFixed(1)}%</span>
-        </div>
-        <div>
-          <span className="text-[9px] uppercase text-zinc-600 font-bold tracking-widest block mb-1">Semantic Drift</span>
-          <span className="text-zinc-500">{item.semantic_drift || '0.00'}</span>
-        </div>
-        <div>
-          <span className="text-[9px] uppercase text-zinc-600 font-bold tracking-widest block mb-1">Target Scope</span>
-          <span className="text-zinc-400 truncate">{item.future_scope}</span>
-        </div>
-      </div>
-    </div>
-  </GlassCard>
-);
-
-const RawRow = ({ item, index }) => (
-  <motion.div
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    transition={{ duration: 0.1, delay: index * 0.01 }}
-    className="group flex items-center gap-6 py-3 px-6 border-b border-white/[0.03] hover:bg-studio-emerald/[0.03] transition-colors"
-  >
-    <div className="w-1.5 h-1.5 rounded-full bg-studio-emerald/60 shrink-0" />
-    <span className="text-[11px] font-mono text-zinc-600 w-20 shrink-0">
-      {new Date(item.captured_at).toLocaleTimeString([], { hour12: false })}
-    </span>
-    <span className="text-[11px] font-mono text-zinc-500 w-32 shrink-0 truncate uppercase tracking-widest">
-      {item.source}
-    </span>
-    <a 
-      href={item.link} 
-      target="_blank" 
-      rel="noreferrer" 
-      className="text-[13px] font-medium text-zinc-300 hover:text-white transition-colors truncate flex-1"
-    >
-      {item.title}
-      <span className="block text-[10px] text-zinc-600 font-mono mt-0.5">
-        {item.local_summary}
-      </span>
-    </a>
-    <ExternalLink className="w-3.5 h-3.5 text-zinc-800" />
-  </motion.div>
-);
-
 export default function App() {
+  const [activeTab, setActiveTab] = useState('JEWELS'); // JEWELS | RAW
   const [jewels, setJewels] = useState([]);
   const [raw, setRaw] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedSignal, setSelectedSignal] = useState(null);
 
   useEffect(() => {
     fetchData();
@@ -150,102 +32,203 @@ export default function App() {
   const fetchData = async () => {
     try {
       const [jRes, rRes] = await Promise.all([
-        axios.get(`${API_BASE}/jewels?limit=20`),
+        axios.get(`${API_BASE}/jewels?limit=30`),
         axios.get(`${API_BASE}/raw?limit=50`)
       ]);
       setJewels(jRes.data);
       setRaw(rRes.data);
       setLoading(false);
     } catch (err) {
-      console.error("System Drift:", err);
+      console.error("Link failure:", err);
     }
   };
 
+  const signals = activeTab === 'JEWELS' ? jewels : raw;
+
   return (
-    <div className="min-h-screen flex flex-col bg-studio-bg selection:bg-studio-emerald/20 pb-20 md:pb-0">
-      
-      {/* Utility-Focused Nav */}
-      <nav className="glass-nav px-4 md:px-6">
-        <div className="max-w-7xl mx-auto h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-studio-emerald flex items-center justify-center">
-              <Shield className="text-black w-5 h-5" />
-            </div>
-            <div>
-              <h1 className="text-base font-black tracking-tight text-white uppercase leading-none">Hawk</h1>
-              <p className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest mt-1">Forensic Agent</p>
-            </div>
+    <div className="min-h-screen bg-noir text-blanc font-mono selection:bg-coral/30 flex flex-col">
+      {/* Dynamic Header */}
+      <header className="sticky top-0 z-50 liquid-glass border-b border-white/10 px-6 py-4 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <div className="w-10 h-10 coral-gradient flex items-center justify-center">
+            <Shield className="text-black w-6 h-6" />
           </div>
-
+          <div>
+            <h1 className="text-lg font-black tracking-tighter uppercase leading-none">Hawk Agent</h1>
+            <p className="text-[10px] text-coral font-bold uppercase tracking-[0.3em] mt-1">Forensic_Audit_Portal</p>
+          </div>
         </div>
-      </nav>
 
-      {/* Content-First Workspace */}
-      <main className="max-w-[1600px] mx-auto w-full px-4 md:px-6 pt-6 flex-1 flex flex-col min-h-0 overflow-hidden">
-        
-        {/* Analysis Stream (Primary focus) */}
-        <section className="flex-1 overflow-y-auto custom-scrollbar pb-6 pr-2">
-          <div className="flex items-center justify-between mb-6 border-b border-white/5 pb-3">
-            <div className="flex items-center gap-3">
-              <Badge>Analysis_Stream</Badge>
-              <h2 className="text-sm font-bold text-zinc-400 uppercase tracking-[0.2em] font-mono">Forensic_Assets</h2>
-            </div>
-            <span className="text-[10px] font-mono text-zinc-700 font-bold">{jewels.length} SIGNALED OBJECTS</span>
-          </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {jewels.map((j, i) => <JewelCard key={j.hash || i} item={j} index={i} />)}
-            {jewels.length === 0 && !loading && (
-              <div className="col-span-full py-32 text-center border border-dashed border-white/5 rounded-3xl">
-                <p className="text-zinc-700 font-mono text-[10px] uppercase tracking-widest font-bold">Scanning for high-signal architectural patterns...</p>
-              </div>
-            )}
-          </div>
-        </section>
+        <nav className="hidden md:flex items-center gap-8 text-[10px] font-black uppercase tracking-widest">
+          {['JEWELS', 'RAW'].map(tab => (
+            <button
+              key={tab}
+              onClick={() => { setActiveTab(tab); setSelectedSignal(null); }}
+              className={`pb-1 border-b-2 transition-all ${activeTab === tab ? 'border-coral text-coral' : 'border-transparent text-zinc-500 hover:text-white'}`}
+            >
+              {tab === 'JEWELS' ? 'Validated_Jewels' : 'Raw_Observations'}
+            </button>
+          ))}
+        </nav>
 
-        {/* System Console (Secondary telemetry) */}
-        <section className="h-24 md:h-28 border-t border-white/[0.08] bg-black/40 px-4 flex flex-col shrink-0">
-          <div className="flex items-center justify-between py-2 border-b border-white/5">
-            <div className="flex items-center gap-2">
-              <Terminal className="w-3 h-3 text-studio-emerald/50" />
-              <span className="text-[9px] font-bold text-zinc-600 uppercase tracking-widest">Live_System_Log</span>
-            </div>
-            <div className="flex items-center gap-1.5 opacity-50">
-              <div className="w-1 h-1 rounded-full bg-studio-emerald animate-pulse" />
-              <span className="text-[8px] font-mono text-zinc-700 font-bold uppercase">Streaming live forensics</span>
-            </div>
-          </div>
-          <div className="flex-1 overflow-y-auto custom-scrollbar-mini py-2 font-mono">
-            {raw.map((r, i) => (
-              <div key={r.hash || i} className="flex items-center gap-4 text-[10px] py-0.5 hover:bg-white/[0.02]">
-                <span className="text-zinc-800 shrink-0">[{new Date(r.captured_at).toLocaleTimeString([], { hour12: false })}]</span>
-                <span className="text-studio-emerald/40 shrink-0 uppercase tracking-tighter">@{r.source}</span>
-                <a href={r.link} target="_blank" rel="noreferrer" className="text-zinc-500 hover:text-zinc-300 truncate transition-colors">
-                  {r.title}
-                  {r.local_summary && <span className="text-zinc-700 ml-2">&gt; {r.local_summary}</span>}
-                </a>
+        <div className="flex items-center gap-2">
+          <div className={`w-2 h-2 rounded-full ${loading ? 'bg-zinc-800' : 'bg-coral animate-pulse'}`} />
+          <span className="text-[9px] font-bold text-zinc-600 uppercase tracking-widest">Live</span>
+        </div>
+      </header>
+
+      <main className="flex-1 max-w-4xl mx-auto w-full px-6 pt-12 pb-24">
+        <AnimatePresence mode="wait">
+          {!selectedSignal ? (
+            <motion.div
+              key="list"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-4"
+            >
+              <div className="mb-12">
+                <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-none mb-6">
+                  {activeTab === 'JEWELS' ? 'Validated\nFindings' : 'Observation\nStream'}
+                </h2>
+                <p className="text-zinc-500 text-sm max-w-xl font-typewriter leading-relaxed">
+                  {activeTab === 'JEWELS' 
+                    ? "Audited architectural shifts and verified high-signal signals curated by the Hawk analytical engine."
+                    : "Unfiltered data telemetry from the frontline. Raw inputs captured across all forensic sensors."}
+                </p>
               </div>
-            ))}
-          </div>
-        </section>
+
+              {/* Newsletter List */}
+              <div className="divide-y divide-white/5 border-t border-white/5">
+                {signals.map((signal, i) => (
+                  <motion.div
+                    key={signal.hash || i}
+                    onClick={() => setSelectedSignal(signal)}
+                    className="signal-row group"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: i * 0.05 }}
+                  >
+                    <div className="flex items-center gap-4 mb-2">
+                      <span className="text-[10px] text-zinc-600 font-bold">{String(i + 1).padStart(2, '0')}</span>
+                      <span className="text-[10px] text-coral font-bold uppercase tracking-widest">
+                        {signal.source || 'Unknown'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-end gap-6">
+                      <h3 className="text-xl md:text-2xl font-bold text-white group-hover:text-coral transition-colors flex-1 line-clamp-2">
+                        {signal.title}
+                      </h3>
+                      <ChevronRight className="w-5 h-5 text-zinc-800 group-hover:text-coral transform transition-transform group-hover:translate-x-1" />
+                    </div>
+                    {(activeTab === 'JEWELS' ? signal.technical_significance : (signal.local_summary || signal.gist)) && (
+                      <p className="mt-4 text-zinc-500 text-sm font-typewriter line-clamp-2 max-w-2xl">
+                        {activeTab === 'JEWELS' ? signal.technical_significance : (signal.local_summary || signal.gist)}
+                      </p>
+                    )}
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="detail"
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.02 }}
+              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              className="bg-white/[0.02] border border-white/5 p-8 md:p-12 rounded-sm"
+            >
+              <button 
+                onClick={() => setSelectedSignal(null)}
+                className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-coral transition-colors mb-12"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Return_To_Stream
+              </button>
+
+              <div className="space-y-12">
+                <header>
+                  <div className="flex items-center gap-4 mb-6">
+                    <span className="meta-tag">{selectedSignal.source}</span>
+                    <span className="text-[10px] text-zinc-600 font-bold">
+                      {new Date(selectedSignal.captured_at).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter leading-tight text-white mb-8 italic italic-coral">
+                    {selectedSignal.title}
+                  </h1>
+                  <a 
+                    href={selectedSignal.link} 
+                    target="_blank" 
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-coral text-noir font-black uppercase tracking-widest text-xs hover:bg-white transition-all transform hover:-translate-y-1 active:translate-y-0"
+                  >
+                    View_Source_Asset
+                    <ArrowRight className="w-4 h-4" />
+                  </a>
+                </header>
+
+                <div className="prose prose-invert max-w-none">
+                  <div className="space-y-8">
+                    <section>
+                      <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-coral mb-4">Final_Analysis_Summary</h4>
+                      <p className="text-lg text-zinc-300 font-typewriter leading-relaxed border-l-2 border-coral pl-6">
+                        {activeTab === 'JEWELS' ? selectedSignal.technical_significance : (selectedSignal.local_summary || selectedSignal.gist)}
+                      </p>
+                    </section>
+
+                    {activeTab === 'JEWELS' && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 pt-8 border-t border-white/5">
+                        <section>
+                          <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 mb-4">Architectural_Pattern</h4>
+                          <p className="text-zinc-400 font-typewriter">{selectedSignal.architectural_pattern}</p>
+                        </section>
+                        <section>
+                          <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 mb-4">Entropy_Score</h4>
+                          <p className="text-coral font-black text-2xl">{(selectedSignal.entropy_score * 100).toFixed(2)}%</p>
+                        </section>
+                        <section>
+                          <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 mb-4">Future_Scope</h4>
+                          <p className="text-zinc-400 font-typewriter">{selectedSignal.future_scope}</p>
+                        </section>
+                        <section>
+                          <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 mb-4">Signal_Hash</h4>
+                          <p className="text-zinc-600 font-mono text-[10px] truncate">{selectedSignal.hash}</p>
+                        </section>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
 
-      {/* Sticky Mini-Footer */}
-      <footer className="h-10 border-t border-white/5 bg-zinc-950 px-6 flex items-center justify-between shrink-0 sticky bottom-0 z-50">
-        <div className="flex items-center gap-4 text-[9px] font-mono text-zinc-700 uppercase tracking-widest font-bold">
-          <div className="flex items-center gap-1.5">
-            <Shield className="w-3 h-3" />
-            <span>Hawk.v4.07</span>
-          </div>
-          <div className="w-px h-3 bg-white/5" />
-          <span>Architectural Forensics</span>
-        </div>
+      {/* Mobile Tab Bar */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 liquid-glass border-t border-white/10 px-6 py-4 flex justify-around">
+        {['JEWELS', 'RAW'].map(tab => (
+          <button
+            key={tab}
+            onClick={() => { setActiveTab(tab); setSelectedSignal(null); }}
+            className={`text-[10px] font-black uppercase tracking-widest ${activeTab === tab ? 'text-coral' : 'text-zinc-500'}`}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
 
-        <div className="flex items-center gap-4 text-[9px] font-mono">
-          <span className="text-zinc-800">DEV:</span>
-          <a href="https://portfolio.akdey.vercel.app/" target="_blank" rel="noreferrer" className="text-zinc-500 hover:text-studio-emerald transition-all uppercase tracking-widest font-bold">
-            Amit Kumar Dey
-          </a>
+      <footer className="py-12 px-6 border-t border-white/5 bg-black">
+        <div className="max-w-4xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="flex items-center gap-3">
+            <Shield className="w-5 h-5 text-zinc-800" />
+            <span className="text-[10px] font-black text-zinc-600 tracking-[0.4em] uppercase">Hawk_v4.0.08</span>
+          </div>
+          <p className="text-[10px] text-zinc-800 uppercase font-black">
+            Developed by Amit Kumar Dey / <a href="https://portfolio.akdey.vercel.app/" target="_blank" rel="noreferrer" className="text-zinc-600 hover:text-coral transition-colors underline">Portfolio</a>
+          </p>
         </div>
       </footer>
     </div>

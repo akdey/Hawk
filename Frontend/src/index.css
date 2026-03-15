@@ -1,91 +1,66 @@
 @import "tailwindcss";
 
 @theme {
-  /* Studio Minimalist Palette */
-  --color-studio-bg: #050505;
-  --color-studio-surface: #0f0f10;
-  --color-studio-elevated: #161617;
-  --color-studio-border: rgba(255, 255, 255, 0.04);
-  --color-studio-border-hover: rgba(255, 255, 255, 0.08);
+  --color-coral: #FF6B4E;
+  --color-coral-dark: #cc553f;
+  --color-noir: #000000;
+  --color-blanc: #FFFFFF;
   
-  --color-studio-emerald: #10b981;
-  --color-studio-emerald-muted: rgba(16, 185, 129, 0.1);
-  
-  --color-text-vibrant: #ffffff;
-  --color-text-muted: #a1a1aa;
-  --color-text-dim: #52525b;
-
-  --font-sans: "Inter", "Outfit", system-ui, sans-serif;
+  --font-typewriter: "Courier Prime", monospace;
   --font-mono: "JetBrains Mono", monospace;
+  
+  --radius-xl: 0px;
+  --radius-2xl: 0px;
 }
 
 @layer base {
-  :root {
-    background-color: var(--color-studio-bg);
-    color: var(--color-text-muted);
-    font-family: var(--font-sans);
-    -webkit-font-smoothing: antialiased;
-    scroll-behavior: smooth;
-  }
-
   body {
-    margin: 0;
-    background: var(--color-studio-bg);
-    background-attachment: fixed;
+    @apply bg-noir text-blanc font-mono selection:bg-coral/30;
+    -webkit-font-smoothing: antialiased;
   }
 }
 
 @layer components {
-  .glass-card {
-    @apply bg-studio-surface/40 border border-studio-border rounded-xl transition-all duration-200;
+  .liquid-glass {
+    @apply bg-white/[0.03] backdrop-blur-[40px] border border-white/[0.08];
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
   }
 
-  .glass-card:hover {
-    @apply border-studio-border-hover bg-studio-surface/60;
+  .coral-gradient {
+    background: linear-gradient(135deg, var(--color-coral) 0%, #ff8a75 100%);
   }
 
-  .glass-nav {
-    @apply sticky top-0 z-50 bg-studio-bg/80 border-b border-studio-border backdrop-blur-md;
+  .btn-primary {
+    @apply px-6 py-2 bg-coral text-noir font-black uppercase tracking-widest text-[10px] hover:bg-white transition-colors duration-200 cursor-pointer;
   }
 
-  /* Refined Accent Bar */
-  .accent-bar {
-    @apply h-full w-1 rounded-full bg-studio-emerald;
+  .signal-row {
+    @apply border-b border-white/[0.05] py-6 px-4 hover:bg-white/[0.02] transition-all cursor-pointer block;
   }
 
-  /* Data Value Typography */
-  .data-readout {
-    @apply font-mono font-medium tracking-tight text-white;
+  .meta-tag {
+    @apply text-[9px] font-black uppercase tracking-[0.2em] px-2 py-0.5 border border-white/20 text-zinc-500 rounded-sm;
   }
 }
 
-/* Scrollbar - High Contrast Utility */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 2px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.01);
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(16, 185, 129, 0.2);
-  border-radius: 10px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: var(--color-studio-emerald);
-}
-
-/* Base Scrollbar */
+/* Custom Scrollbar - "The Newsletter" Style */
 ::-webkit-scrollbar {
-  width: 4px;
+  width: 1px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: var(--color-noir);
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-zinc-800 rounded-full hover:bg-studio-emerald;
+  background: var(--color-coral);
+}
+
+/* Animations */
+.expand-transition {
+  transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.liquid-shadow {
+  filter: drop-shadow(0 0 20px rgba(255, 107, 78, 0.1));
 }
