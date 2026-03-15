@@ -58,7 +58,7 @@ class HawkAgent:
             for i, item in enumerate(high_signal_items, 1):
                 logger.info(f"Synthesizing candidate {i}/{len(high_signal_items)}: {item.get('title')[:50]}...")
                 jewel = await brain.synthesize(item)
-                if jewel and jewel.get("classification") == "Jewel":
+                if jewel:
                     jewels.append(jewel)
                     self.notify_jewel_discovery(jewel)
             logger.info(f"PHASE 3 COMPLETE: Synthesized {len(jewels)} technical jewels.")

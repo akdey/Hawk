@@ -53,6 +53,59 @@ class SignalFilter:
             logger.error(f"Summarization error: {e}")
             return "Technical synthesis failed."
 
+    async def synthesize_locally(self, signal: Dict) -> Dict:
+        """Fallback synthesis using local Qwen when Groq is offline."""
+        await self.ensure_model_loaded()
+        text = f"{signal.get('title', '')} {signal.get('description', '')}"
+        
+        if not self.model:
+            # Hard fallback: Return raw data as basic Jewel
+            return {
+                "technical_significance": signal.get("description") or "High-signal raw data captured.",
+                "architectural_pattern": "Raw Technical Primitive",
+                "future_scope": "Requires deep manual audit.",
+                "entropy_score": signal.get("density_score", 0.5),
+                "classification": "Jewel",
+                "semantic_drift": "Unknown (Synthesis Offline)"
+            }
+
+        prompt = f"System: You are an architectural analyst. Audit this signal and return a JSON object with: technical_significance, architectural_pattern, future_scope, entropy_score (0-1), and classification='Jewel'.\nUser: {text[:800]}\nJSON:"
+        
+        try:
+            inputs = self.tokenizer(prompt, return_tensors="pt").to(self.model.device)
+            outputs = self.model.generate(**inputs, max_new_tokens=150)
+            response = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+            
+            # Simple heuristic JSON extraction
+            import json
+            json_str = response.split("JSON:")[-1].strip()
+            # Try to find { ... }
+            start = json_str.find("{")
+            end = json_str.rfind("}")
+            if start != -1 and end != -1:
+                result = json.loads(json_str[start:end+1])
+                return result
+            
+            # Fallback if JSON parsing fails
+            return {
+                "technical_significance": await self.summarize_locally(text),
+                "architectural_pattern": "Dynamic Pattern Discovery",
+                "future_scope": "Pending deep synthesis.",
+                "entropy_score": 0.5,
+                "classification": "Jewel",
+                "semantic_drift": "Stable"
+            }
+        except Exception as e:
+            logger.error(f"Local synthesis error: {e}")
+            return {
+                "technical_significance": "Synthesis engine encountered an error.",
+                "architectural_pattern": "Unknown",
+                "future_scope": "Unavailable",
+                "entropy_score": 0.0,
+                "classification": "Trend",
+                "semantic_drift": "Error"
+            }
+
     async def classify_with_llm(self, text: str) -> bool:
         """Use local LLM to decide if content is high-signal or junk."""
         await self.ensure_model_loaded()

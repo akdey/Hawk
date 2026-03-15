@@ -36,9 +36,13 @@ class TechnicalArchitect:
 
     async def synthesize(self, signal: Dict) -> Optional[Dict]:
         """Synthesize a raw technical signal into an architectural 'Jewel'."""
+        from app.core.filters import sieve
+        
         if not self.client:
-            logger.warning("Groq API key not configured. Skipping synthesis.")
-            return None
+            logger.info("Groq API key missing. Falling back to Local Synthesis.")
+            local_result = await sieve.synthesize_locally(signal)
+            signal.update(local_result)
+            return signal
 
         prompt = f"""
         ACT AS: A Lead Software Architect and Technical Forensic Investigator.
