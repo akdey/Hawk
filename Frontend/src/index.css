@@ -1,80 +1,90 @@
 @import "tailwindcss";
 
 @theme {
-  /* Precision Lab Palette */
-  --color-lab-bg: #0c0c0c;
-  --color-lab-surface: #141414;
-  --color-lab-border: #262626;
-  --color-lab-border-focus: #404040;
+  /* Studio Minimalist Palette */
+  --color-studio-bg: #050505;
+  --color-studio-surface: #0f0f10;
+  --color-studio-elevated: #161617;
+  --color-studio-border: rgba(255, 255, 255, 0.04);
+  --color-studio-border-hover: rgba(255, 255, 255, 0.08);
   
-  --color-lab-cyan: #00f0ff;
-  --color-lab-yellow: #ffee00;
+  --color-studio-emerald: #10b981;
+  --color-studio-emerald-muted: rgba(16, 185, 129, 0.1);
   
-  --color-text-intense: #ffffff;
-  --color-text-standard: #a1a1aa;
+  --color-text-vibrant: #ffffff;
+  --color-text-muted: #a1a1aa;
   --color-text-dim: #52525b;
 
-  --font-sans: "Inter", system-ui, sans-serif;
+  --font-sans: "Inter", "Outfit", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", monospace;
 }
 
 @layer base {
   :root {
-    background-color: var(--color-lab-bg);
-    color: var(--color-text-standard);
+    background-color: var(--color-studio-bg);
+    color: var(--color-text-muted);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+    scroll-behavior: smooth;
   }
 
   body {
     margin: 0;
-    /* Dot Matrix Texture */
-    background-image: radial-gradient(var(--color-lab-border) 0.5px, transparent 0.5px);
-    background-size: 24px 24px;
+    /* Soft focal gradient for depth */
+    background: 
+      radial-gradient(circle at 50% -20%, rgba(16, 185, 129, 0.03) 0%, transparent 60%),
+      var(--color-studio-bg);
     background-attachment: fixed;
   }
 }
 
 @layer components {
-  .instrument-panel {
-    @apply bg-lab-surface border border-lab-border transition-colors duration-150;
+  .glass-card {
+    @apply bg-studio-surface/60 border border-studio-border rounded-xl transition-all duration-300;
+    backdrop-filter: blur(12px);
   }
 
-  .instrument-panel:hover {
-    @apply border-lab-border-focus;
+  .glass-card:hover {
+    @apply border-studio-border-hover -translate-y-0.5;
+    background-color: rgba(22, 22, 23, 0.7);
+    box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.5);
   }
 
-  /* Sharp Technical Borders */
-  .border-sharp {
-    border-radius: 0;
+  .glass-nav {
+    @apply sticky top-0 z-50 bg-studio-bg/60 border-b border-studio-border;
+    backdrop-filter: blur(16px);
   }
 
-  /* Data Readout Style */
-  .readout-value {
-    @apply font-mono font-bold tracking-tighter;
+  /* Refined Accent Bar */
+  .accent-bar {
+    @apply h-full w-1 rounded-full bg-studio-emerald;
   }
 
-  /* Status Indicator */
-  .status-active {
-    @apply bg-lab-cyan shadow-[0_0_8px_rgba(0,240,255,0.4)];
+  /* Data Value Typography */
+  .data-readout {
+    @apply font-mono font-medium tracking-tight text-white;
   }
 }
 
-/* Scrollbar - Industrial Style */
+/* Scrollbar - Refined Minimalist */
 ::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
+  width: 3px;
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-lab-bg;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-lab-border hover:bg-lab-border-focus;
+  @apply bg-zinc-800 rounded-full hover:bg-studio-emerald;
 }
 
-/* Transitions */
-.transition-technical {
-  transition: all 0.2s cubic-bezier(0, 0, 0, 1);
+/* Animations - Organic Springs */
+@keyframes fadeInScale {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-in {
+  animation: fadeInScale 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
