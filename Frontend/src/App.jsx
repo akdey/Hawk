@@ -220,36 +220,28 @@ export default function App() {
       <main className="max-w-7xl mx-auto w-full px-4 md:px-6 py-8 md:py-12 flex-1">
         
         {/* Systems Dashboard */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-12 md:mb-16">
-          <GlassCard className="md:col-span-2 !p-6 md:!p-8 bg-gradient-to-br from-zinc-900/40 to-transparent">
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 md:gap-8">
-              <div>
+        <div className="mb-12 md:mb-16">
+          <GlassCard className="!p-6 md:!p-10 bg-gradient-to-br from-zinc-900/40 to-transparent">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 md:gap-12">
+              <div className="flex-1">
                 <Badge glow>Autonomous Scan Active</Badge>
-                <h2 className="text-2xl md:text-3xl font-extrabold text-white mt-4 tracking-tight">Technical Forensics</h2>
-                <p className="text-zinc-400 mt-2 text-sm md:text-base leading-relaxed max-w-md">
-                  Sifting through high-entropy noise to identify architectural patterns and structural drift.
+                <h2 className="text-3xl md:text-4xl font-extrabold text-white mt-4 tracking-tight">Technical Forensics</h2>
+                <p className="text-zinc-400 mt-3 text-sm md:text-base leading-relaxed max-w-2xl">
+                  Sifting through high-entropy noise to identify architectural patterns and structural drift across the technical horizon.
                 </p>
               </div>
-              <div className="flex flex-row lg:flex-col gap-6 p-5 md:p-6 rounded-2xl bg-white/[0.02] border border-white/5 justify-between lg:justify-start">
-                <div className="flex items-center gap-4">
-                  <span className="text-xl md:text-2xl font-mono font-bold text-studio-emerald">{jewels.length}</span>
-                  <span className="text-[9px] md:text-[10px] font-mono text-zinc-500 uppercase tracking-wider leading-tight">High-Signal<br/>Assets</span>
+              <div className="flex flex-row lg:flex-row gap-8 md:gap-12 p-6 md:p-8 rounded-3xl bg-white/[0.02] border border-white/5 items-center">
+                <div className="flex flex-col gap-1">
+                  <span className="text-2xl md:text-3xl font-mono font-bold text-studio-emerald tracking-tighter">{jewels.length}</span>
+                  <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest leading-tight">High-Signal Assets</span>
                 </div>
-                <div className="flex items-center gap-4">
-                  <span className="text-xl md:text-2xl font-mono font-bold text-white">{raw.length}</span>
-                  <span className="text-[9px] md:text-[10px] font-mono text-zinc-500 uppercase tracking-wider leading-tight">Telemetry<br/>Payloads</span>
+                <div className="w-px h-12 bg-white/5" />
+                <div className="flex flex-col gap-1">
+                  <span className="text-2xl md:text-3xl font-mono font-bold text-white tracking-tighter">{raw.length}</span>
+                  <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest leading-tight">Total Telemetry</span>
                 </div>
               </div>
             </div>
-          </GlassCard>
-          
-          <GlassCard className="bg-studio-emerald/5 border-studio-emerald/20 flex flex-col justify-center gap-6 md:gap-8 !p-6 md:!p-8 relative overflow-hidden">
-            <div className="absolute -right-4 -bottom-4 opacity-5">
-              <Shield className="w-32 h-32 text-studio-emerald" />
-            </div>
-            <Indicator label="Global Nodes" value="08 ACTIVE" icon={Layers} color="emerald" />
-            <Indicator label="Avg Latency" value="124ms" icon={Clock} color="zinc" />
-            <Indicator label="Agent Speed" value="4.2s/scan" icon={MousePointer2} color="zinc" />
           </GlassCard>
         </div>
 
