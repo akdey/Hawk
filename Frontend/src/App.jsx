@@ -201,7 +201,7 @@ export default function App() {
             <div className="flex items-center gap-4">
               <div className="hidden lg:flex items-center gap-3 px-4 border-l border-white/5">
                 <span className="flex items-center gap-1.5 text-[10px] font-mono text-zinc-500 uppercase">
-                  <span className="status-dot bg-emerald-500 animate-pulse" /> Live
+                  <span className="status-dot bg-emerald-500 animate-pulse" /> investigation live
                 </span>
                 <span className="text-zinc-800 text-sm">|</span>
                 <span className="text-[10px] font-mono text-zinc-500">{jewels.length + raw.length} SIGNALS</span>

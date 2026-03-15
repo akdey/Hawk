@@ -1,92 +1,80 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand-primary: #8b5cf6;
-  --color-brand-secondary: #06b6d4;
+  /* Precision Lab Palette */
+  --color-lab-bg: #0c0c0c;
+  --color-lab-surface: #141414;
+  --color-lab-border: #262626;
+  --color-lab-border-focus: #404040;
   
-  --color-bg-base: #09090b;
-  --color-bg-surface: #18181b;
-  --color-bg-panel: rgba(24, 24, 27, 0.8);
+  --color-lab-cyan: #00f0ff;
+  --color-lab-yellow: #ffee00;
   
-  --color-border-subtle: rgba(255, 255, 255, 0.08);
-  --color-border-muted: rgba(255, 255, 255, 0.04);
-  
-  --color-text-primary: #fafafa;
-  --color-text-secondary: #a1a1aa;
-  --color-text-muted: #71717a;
+  --color-text-intense: #ffffff;
+  --color-text-standard: #a1a1aa;
+  --color-text-dim: #52525b;
 
-  --font-sans: "Inter", "Outfit", system-ui, sans-serif;
+  --font-sans: "Inter", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", monospace;
 }
 
 @layer base {
   :root {
-    background-color: var(--color-bg-base);
-    color: var(--color-text-primary);
+    background-color: var(--color-lab-bg);
+    color: var(--color-text-standard);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
-    scroll-behavior: smooth;
   }
 
   body {
     margin: 0;
-    overflow-x: hidden;
-    /* Subtle background texture/gradient */
-    background: 
-      radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.05) 0%, transparent 60%),
-      var(--color-bg-base);
+    /* Dot Matrix Texture */
+    background-image: radial-gradient(var(--color-lab-border) 0.5px, transparent 0.5px);
+    background-size: 24px 24px;
+    background-attachment: fixed;
   }
 }
 
 @layer components {
-  .premium-card {
-    @apply bg-bg-surface border border-border-subtle rounded-2xl transition-all duration-300;
-    box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.5);
+  .instrument-panel {
+    @apply bg-lab-surface border border-lab-border transition-colors duration-150;
   }
 
-  .premium-card:hover {
-    @apply border-white/20 -translate-y-1;
-    box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.6);
+  .instrument-panel:hover {
+    @apply border-lab-border-focus;
   }
 
-  .glass-panel {
-    @apply backdrop-blur-xl bg-bg-panel border border-border-subtle;
+  /* Sharp Technical Borders */
+  .border-sharp {
+    border-radius: 0;
   }
 
-  .nav-blur {
-    @apply sticky top-0 z-50 backdrop-blur-md bg-bg-base/80 border-b border-border-muted;
+  /* Data Readout Style */
+  .readout-value {
+    @apply font-mono font-bold tracking-tighter;
   }
 
-  /* Status Indicators */
-  .status-dot {
-    @apply w-1.5 h-1.5 rounded-full inline-block;
+  /* Status Indicator */
+  .status-active {
+    @apply bg-lab-cyan shadow-[0_0_8px_rgba(0,240,255,0.4)];
   }
 }
 
-/* Custom Utilities */
-.text-balance {
-  text-wrap: balance;
-}
-
-/* Scrollbar */
+/* Scrollbar - Industrial Style */
 ::-webkit-scrollbar {
-  width: 5px;
+  width: 4px;
+  height: 4px;
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-transparent;
+  @apply bg-lab-bg;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-zinc-800 rounded-full hover:bg-zinc-700;
+  @apply bg-lab-border hover:bg-lab-border-focus;
 }
 
-/* Animations */
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.animate-slide-up {
-  animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+/* Transitions */
+.transition-technical {
+  transition: all 0.2s cubic-bezier(0, 0, 0, 1);
 }
