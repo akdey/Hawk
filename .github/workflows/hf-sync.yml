@@ -26,5 +26,6 @@ jobs:
           fi
           git config --global user.email "hawk-agent@huggingface.co"
           git config --global user.name "Hawk Agent"
-          # Sync only the Backend subdirectory to the root of the Space
-          git subtree push --prefix Backend https://a-k-dey:$HF_TOKEN@huggingface.co/spaces/$HF_SPACE_ID main
+          # Force push the split commit to overwrite remote state
+          SHA=$(git subtree split --prefix=Backend)
+          git push https://a-k-dey:$HF_TOKEN@huggingface.co/spaces/$HF_SPACE_ID $SHA:main --force
