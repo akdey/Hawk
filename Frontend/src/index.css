@@ -31,15 +31,15 @@
   }
 
   .btn-primary {
-    @apply px-6 py-2 bg-coral text-noir font-black uppercase tracking-widest text-[10px] hover:bg-white transition-colors duration-200 cursor-pointer;
+    @apply px-8 py-4 bg-coral text-noir font-black uppercase tracking-[0.2em] text-[11px] hover:bg-white transition-all transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer;
   }
 
-  .signal-row {
-    @apply border-b border-white/[0.05] py-6 px-4 hover:bg-white/[0.02] transition-all cursor-pointer block;
+  .signal-card {
+    @apply p-8 bg-white/[0.02] border border-white/[0.05] hover:border-coral/20 hover:bg-white/[0.04] transition-all cursor-pointer block backdrop-blur-sm;
   }
 
   .meta-tag {
-    @apply text-[9px] font-black uppercase tracking-[0.2em] px-2 py-0.5 border border-white/20 text-zinc-500 rounded-sm;
+    @apply text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1 border border-white/20 text-zinc-500;
   }
 }
 
