@@ -5,6 +5,7 @@ on:
     branches: [ main, master ]
     paths:
       - 'Backend/**'
+  workflow_dispatch:
 
 jobs:
   sync-to-hub:
