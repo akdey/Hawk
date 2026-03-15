@@ -13,7 +13,7 @@ async def get_jewels(limit: int = Query(20, gt=0)):
     if not os.path.exists(path):
         return []
     
-    df = pd.read_csv(path)
+    df = pd.read_csv(path).fillna("")
     # Return last 'limit' items (newest first)
     data = df.tail(limit).to_dict(orient="records")
     return data[::-1]
@@ -25,6 +25,6 @@ async def get_raw_signals(limit: int = Query(50, gt=0)):
     if not os.path.exists(path):
         return []
     
-    df = pd.read_csv(path)
+    df = pd.read_csv(path).fillna("")
     data = df.tail(limit).to_dict(orient="records")
     return data[::-1]
