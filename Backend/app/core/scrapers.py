@@ -136,7 +136,7 @@ class DiscoverySurfer:
         logger.info(f"Surfer exploring {start_url} (depth={depth})")
         
         from playwright.async_api import async_playwright
-        from playwright_stealth import stealth_async
+        from playwright_stealth import stealth
         import random
         import asyncio
         
@@ -151,7 +151,7 @@ class DiscoverySurfer:
                 )
                 
                 page = await context.new_page()
-                await stealth_async(page)
+                await stealth(page)
                 logger.info("Stealth Sub-Agent active. Masking automation signatures.")
                 
                 # Human-like navigation: Random delay before goto
