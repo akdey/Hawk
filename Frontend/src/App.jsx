@@ -320,28 +320,20 @@ export default function App() {
         </div>
       </div>
 
-      {/* Sophisticated Minimalist Footer */}
-      <footer className="mt-12 md:mt-24 border-t border-white/5 py-8 md:py-12 bg-zinc-950/20 mb-20 md:mb-0">
+      {/* Refined Minimalist Footer */}
+      <footer className="mt-12 md:mt-24 border-t border-white/5 py-12 bg-zinc-950/20 mb-20 md:mb-0">
         <div className="max-w-7xl mx-auto px-4 md:px-6">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 md:gap-12">
-            <div className="flex flex-col gap-4">
-              <div className="flex items-center gap-3">
-                <div className="w-6 h-6 rounded-lg bg-zinc-900 border border-white/5 flex items-center justify-center">
-                  <Shield className="w-3.5 h-3.5 text-zinc-500" />
-                </div>
-                <span className="text-xs font-bold text-white tracking-widest uppercase">Hawk Forensics</span>
+          <div className="flex flex-col md:flex-row justify-between items-center gap-8">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-xl bg-zinc-900 border border-white/5 flex items-center justify-center">
+                <Shield className="w-4 h-4 text-zinc-500" />
               </div>
-              <p className="text-[10px] md:text-[11px] text-zinc-600 max-w-xs leading-relaxed uppercase tracking-tighter">
-                IDENTIFYING HIGH-SIGNAL ARCHITECTURAL PATTERNS THROUGH AUTONOMOUS INVESTIGATION.
-              </p>
+              <span className="text-xs font-bold text-white tracking-widest uppercase">Hawk Forensics</span>
             </div>
 
-            <div className="flex flex-wrap items-center gap-6 md:gap-12 text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
-              <a href="#" className="hover:text-studio-emerald transition-colors">Docs</a>
-              <a href="#" className="hover:text-studio-emerald transition-colors">API</a>
-              <div className="h-4 w-px bg-white/5 hidden md:block" />
+            <div className="flex items-center gap-8 text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
               <div className="flex items-center gap-2 group">
-                <span className="text-zinc-700">By</span>
+                <span className="text-zinc-600">Developed by</span>
                 <a 
                   href="https://portfolio.akdey.vercel.app/" 
                   target="_blank" 
@@ -355,12 +347,8 @@ export default function App() {
             </div>
           </div>
           
-          <div className="mt-8 md:mt-12 pt-6 md:pt-8 border-t border-white/[0.03] flex flex-col md:flex-row justify-between items-center gap-4 text-[9px] font-mono text-zinc-700 uppercase tracking-widest">
+          <div className="mt-8 pt-8 border-t border-white/[0.03] flex justify-center text-[9px] font-mono text-zinc-700 uppercase tracking-widest">
             <span>© 2026 HAWK LABS</span>
-            <div className="flex gap-4">
-              <span>SYSTEM: OPTIMAL</span>
-              <span>VER: 4.0.2</span>
-            </div>
           </div>
         </div>
       </footer>
