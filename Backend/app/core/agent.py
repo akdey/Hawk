@@ -3,6 +3,7 @@ import logging
 import random
 from datetime import datetime
 from typing import Dict, List
+from app.core.config import settings
 from app.core.scrapers import scraper
 from app.core.filters import sieve
 from app.core.brain import brain
