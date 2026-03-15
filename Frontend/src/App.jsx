@@ -174,12 +174,12 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-studio-bg selection:bg-studio-emerald/20">
+    <div className="min-h-screen flex flex-col bg-studio-bg selection:bg-studio-emerald/20 pb-20 md:pb-0">
       
       {/* Refined Floating Header */}
-      <nav className="glass-nav px-6">
+      <nav className="glass-nav px-4 md:px-6">
         <div className="max-w-7xl mx-auto h-16 flex items-center justify-between">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-studio-emerald flex items-center justify-center shadow-lg shadow-studio-emerald/20">
               <Shield className="text-black w-5 h-5" />
             </div>
@@ -189,6 +189,7 @@ export default function App() {
             </div>
           </div>
 
+          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-1 bg-zinc-950/50 p-1 rounded-xl border border-white/5">
             {['ANALYZE', 'TELEMETRY'].map(tab => (
               <button
@@ -206,38 +207,43 @@ export default function App() {
               <Indicator label="Live Stream" value="CONNECTED" icon={Radio} />
               <Indicator label="Entropy Engine" value="STRIATED" icon={Cpu} />
             </div>
+            {/* Mobile Status Mini */}
+            <div className="flex lg:hidden items-center gap-2 px-3 py-1.5 rounded-lg bg-zinc-900/50 border border-white/5">
+              <div className="w-1.5 h-1.5 rounded-full bg-studio-emerald animate-pulse" />
+              <span className="text-[10px] font-mono font-bold text-zinc-400">LIVE</span>
+            </div>
           </div>
         </div>
       </nav>
 
       {/* Main Container */}
-      <main className="max-w-7xl mx-auto w-full px-6 py-12 flex-1">
+      <main className="max-w-7xl mx-auto w-full px-4 md:px-6 py-8 md:py-12 flex-1">
         
         {/* Systems Dashboard */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-          <GlassCard className="md:col-span-2 !p-8 bg-gradient-to-br from-zinc-900/40 to-transparent">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-12 md:mb-16">
+          <GlassCard className="md:col-span-2 !p-6 md:!p-8 bg-gradient-to-br from-zinc-900/40 to-transparent">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 md:gap-8">
               <div>
                 <Badge glow>Autonomous Scan Active</Badge>
-                <h2 className="text-3xl font-extrabold text-white mt-4 tracking-tight">Technical Forensics</h2>
-                <p className="text-zinc-400 mt-2 text-base leading-relaxed max-w-md">
+                <h2 className="text-2xl md:text-3xl font-extrabold text-white mt-4 tracking-tight">Technical Forensics</h2>
+                <p className="text-zinc-400 mt-2 text-sm md:text-base leading-relaxed max-w-md">
                   Sifting through high-entropy noise to identify architectural patterns and structural drift.
                 </p>
               </div>
-              <div className="flex flex-col gap-6 p-6 rounded-2xl bg-white/[0.02] border border-white/5">
+              <div className="flex flex-row lg:flex-col gap-6 p-5 md:p-6 rounded-2xl bg-white/[0.02] border border-white/5 justify-between lg:justify-start">
                 <div className="flex items-center gap-4">
-                  <span className="text-2xl font-mono font-bold text-studio-emerald">{jewels.length}</span>
-                  <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider leading-tight">High-Signal<br/>Assets</span>
+                  <span className="text-xl md:text-2xl font-mono font-bold text-studio-emerald">{jewels.length}</span>
+                  <span className="text-[9px] md:text-[10px] font-mono text-zinc-500 uppercase tracking-wider leading-tight">High-Signal<br/>Assets</span>
                 </div>
                 <div className="flex items-center gap-4">
-                  <span className="text-2xl font-mono font-bold text-white">{raw.length}</span>
-                  <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider leading-tight">Telemetry<br/>Payloads</span>
+                  <span className="text-xl md:text-2xl font-mono font-bold text-white">{raw.length}</span>
+                  <span className="text-[9px] md:text-[10px] font-mono text-zinc-500 uppercase tracking-wider leading-tight">Telemetry<br/>Payloads</span>
                 </div>
               </div>
             </div>
           </GlassCard>
           
-          <GlassCard className="bg-studio-emerald/5 border-studio-emerald/20 flex flex-col justify-center gap-8 !p-8 relative overflow-hidden">
+          <GlassCard className="bg-studio-emerald/5 border-studio-emerald/20 flex flex-col justify-center gap-6 md:gap-8 !p-6 md:!p-8 relative overflow-hidden">
             <div className="absolute -right-4 -bottom-4 opacity-5">
               <Shield className="w-32 h-32 text-studio-emerald" />
             </div>
@@ -255,11 +261,11 @@ export default function App() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8"
             >
               {jewels.map((j, i) => <JewelCard key={j.hash || i} item={j} index={i} />)}
               {jewels.length === 0 && !loading && (
-                <div className="col-span-full py-32 text-center">
+                <div className="col-span-full py-24 md:py-32 text-center">
                   <div className="w-12 h-12 rounded-2xl bg-zinc-900 border border-white/5 flex items-center justify-center mx-auto mb-6">
                     <Activity className="w-6 h-6 text-zinc-700 animate-pulse" />
                   </div>
@@ -275,18 +281,19 @@ export default function App() {
               exit={{ opacity: 0 }}
               className="glass-card !p-0 overflow-hidden border-white/[0.06]"
             >
-              <div className="px-8 py-5 border-b border-white/[0.06] flex items-center justify-between bg-zinc-900/20">
+              <div className="px-5 md:px-8 py-4 md:py-5 border-b border-white/[0.06] flex items-center justify-between bg-zinc-900/20">
                 <div className="flex items-center gap-3">
                   <Terminal className="w-4 h-4 text-studio-emerald" />
-                  <h3 className="text-xs font-bold uppercase tracking-widest text-white">Live Payload Stream</h3>
+                  <h3 className="text-xs font-bold uppercase tracking-widest text-white">Live Stream</h3>
                 </div>
-                <div className="flex items-center gap-4">
-                  <div className="px-2 py-0.5 rounded-md bg-zinc-900 border border-white/5 text-[9px] font-mono text-zinc-500 uppercase">
+                <div className="flex items-center gap-3">
+                  <div className="hidden sm:block px-2 py-0.5 rounded-md bg-zinc-900 border border-white/5 text-[9px] font-mono text-zinc-500 uppercase">
                     BUFFER: 100%
                   </div>
+                  <Badge glow>REALTIME</Badge>
                 </div>
               </div>
-              <div className="max-h-[600px] overflow-y-auto custom-scrollbar">
+              <div className="max-h-[500px] md:max-h-[600px] overflow-y-auto custom-scrollbar">
                 {raw.map((r, i) => <RawRow key={r.hash || i} item={r} index={i} />)}
               </div>
             </motion.div>
@@ -294,10 +301,29 @@ export default function App() {
         </AnimatePresence>
       </main>
 
+      {/* Mobile Bottom Navigation */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden p-4">
+        <div className="glass-card !bg-zinc-900/90 !p-2 flex items-center justify-around border-white/10 shadow-2xl backdrop-blur-2xl">
+          {[
+            { id: 'ANALYZE', icon: Search, label: 'Analyze' },
+            { id: 'TELEMETRY', icon: Activity, label: 'Live' }
+          ].map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setView(tab.id)}
+              className={`flex flex-col items-center gap-1 px-8 py-2 rounded-xl transition-all ${view === tab.id ? 'bg-studio-emerald/10 text-studio-emerald' : 'text-zinc-500'}`}
+            >
+              <tab.icon className={`w-5 h-5 ${view === tab.id ? 'animate-pulse' : ''}`} />
+              <span className="text-[10px] font-bold uppercase tracking-widest">{tab.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Sophisticated Minimalist Footer */}
-      <footer className="mt-24 border-t border-white/5 py-12 bg-zinc-950/20">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-12">
+      <footer className="mt-12 md:mt-24 border-t border-white/5 py-8 md:py-12 bg-zinc-950/20 mb-20 md:mb-0">
+        <div className="max-w-7xl mx-auto px-4 md:px-6">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 md:gap-12">
             <div className="flex flex-col gap-4">
               <div className="flex items-center gap-3">
                 <div className="w-6 h-6 rounded-lg bg-zinc-900 border border-white/5 flex items-center justify-center">
@@ -305,17 +331,17 @@ export default function App() {
                 </div>
                 <span className="text-xs font-bold text-white tracking-widest uppercase">Hawk Forensics</span>
               </div>
-              <p className="text-[11px] text-zinc-600 max-w-xs leading-relaxed uppercase tracking-tighter">
+              <p className="text-[10px] md:text-[11px] text-zinc-600 max-w-xs leading-relaxed uppercase tracking-tighter">
                 IDENTIFYING HIGH-SIGNAL ARCHITECTURAL PATTERNS THROUGH AUTONOMOUS INVESTIGATION.
               </p>
             </div>
 
-            <div className="flex items-center gap-12 text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
-              <a href="#" className="hover:text-studio-emerald transition-colors">Documentation</a>
-              <a href="#" className="hover:text-studio-emerald transition-colors">Forensic API</a>
+            <div className="flex flex-wrap items-center gap-6 md:gap-12 text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+              <a href="#" className="hover:text-studio-emerald transition-colors">Docs</a>
+              <a href="#" className="hover:text-studio-emerald transition-colors">API</a>
               <div className="h-4 w-px bg-white/5 hidden md:block" />
               <div className="flex items-center gap-2 group">
-                <span className="text-zinc-700">Developed by</span>
+                <span className="text-zinc-700">By</span>
                 <a 
                   href="https://portfolio.akdey.vercel.app/" 
                   target="_blank" 
@@ -329,8 +355,8 @@ export default function App() {
             </div>
           </div>
           
-          <div className="mt-12 pt-8 border-t border-white/[0.03] flex justify-between items-center text-[9px] font-mono text-zinc-700 uppercase tracking-widest">
-            <span>© 2026 HAWK LABS • ALL RIGHTS RESERVED</span>
+          <div className="mt-8 md:mt-12 pt-6 md:pt-8 border-t border-white/[0.03] flex flex-col md:flex-row justify-between items-center gap-4 text-[9px] font-mono text-zinc-700 uppercase tracking-widest">
+            <span>© 2026 HAWK LABS</span>
             <div className="flex gap-4">
               <span>SYSTEM: OPTIMAL</span>
               <span>VER: 4.0.2</span>
