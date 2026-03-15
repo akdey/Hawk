@@ -1,6 +1,10 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #030303;
+  --color-panel: rgba(15, 15, 15, 0.7);
+  --color-accent: #8b5cf6;
+}
 
 :root {
   --bg: #030303;

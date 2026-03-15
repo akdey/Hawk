@@ -5,10 +5,6 @@ from datetime import datetime
 from typing import Dict, List, Optional
 from groq import AsyncGroq
 from app.core.config import settings
-from app.core.scrapers import scraper
-from app.core.filters import sieve
-from app.core.brain import brain
-from app.core.vault import vault
 
 logger = logging.getLogger("hawk.brain")
 
